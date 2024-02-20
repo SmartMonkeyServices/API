@@ -3,6 +3,14 @@ from flask_cors import CORS
 from collections import OrderedDict
 import mysql.connector
 
+stringConection = {
+    "host": "localhost",
+    "user": "wesley",
+    "password": "waa123",
+    "database": "banco_smart_monkey",
+    "port": 3306
+}
+
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*", "headers":"*"}}, supports_credentials=True)
 @app.route("/inserir-dados", methods=["POST"])
@@ -24,13 +32,7 @@ def inserir_dados():
     pais = data["pais"]
 
     # Conecta ao banco de dados
-    conexao = mysql.connector.connect(
-        host="containers-us-west-67.railway.app",
-        user="root",
-        password="NDCAVLFLa47wLwd4D8q3",
-        database="railway",
-        port="7664"
-    )
+    conexao = mysql.connector.connect(**stringConection)
 
     # Cria um cursor para executar comandos SQL
     cursor = conexao.cursor()
@@ -106,13 +108,7 @@ def consulta_dados():
     cpf_cnpj = data["cpf_cnpj"]
     
     # Conecta ao banco de dados
-    conexao = mysql.connector.connect(
-        host="containers-us-west-67.railway.app",
-        user="root",
-        password="NDCAVLFLa47wLwd4D8q3",
-        database="railway",
-        port="7664"
-    )
+    conexao = mysql.connector.connect(**stringConection)
 
     # Cria um cursor para executar comandos SQL
     cursor = conexao.cursor()
@@ -168,13 +164,7 @@ def atualiza_dados():
     pais = data["pais"]
 
     # Conecta ao banco de dados
-    conexao = mysql.connector.connect(
-        host="containers-us-west-67.railway.app",
-        user="root",
-        password="NDCAVLFLa47wLwd4D8q3",
-        database="railway",
-        port="7664"
-    )
+    conexao = mysql.connector.connect(**stringConection)
 
     # Cria um cursor para executar comandos SQL
     cursor = conexao.cursor()
@@ -207,13 +197,7 @@ def consulta_nome():
     data = request.get_json(force=True)
     cpf_cnpj = data["cpf_cnpj"]
     
-    conexao = mysql.connector.connect(
-        host="containers-us-west-67.railway.app",
-        user="root",
-        password="NDCAVLFLa47wLwd4D8q3",
-        database="railway",
-        port="7664"
-    )
+    conexao = mysql.connector.connect(**stringConection)
 
     cursor = conexao.cursor()
     sql = "SELECT nome_razao_social FROM clientes WHERE cpf_cnpj = %s"
@@ -248,13 +232,7 @@ def consulta_nome():
 
 @app.route("/consulta-servicos", methods=["POST"])
 def consulta_servico():
-    conexao = mysql.connector.connect(
-        host="containers-us-west-67.railway.app",
-        user="root",
-        password="NDCAVLFLa47wLwd4D8q3",
-        database="railway",
-        port="7664"
-    )
+    conexao = mysql.connector.connect(**stringConection)
     # Cria um cursor para executar comandos SQL
     cursor = conexao.cursor()
 
@@ -294,13 +272,7 @@ def inserir_servicos():
     data = request.get_json(force=True)
     servico = data["servico"]
 
-    conexao = mysql.connector.connect(
-        host="containers-us-west-67.railway.app",
-        user="root",
-        password="NDCAVLFLa47wLwd4D8q3",
-        database="railway",
-        port="7664"
-    )
+    conexao = mysql.connector.connect(**stringConection)
 
     cursor = conexao.cursor()
     consulta = "SELECT servico from servicos WHERE servico = %s"
@@ -336,13 +308,7 @@ def inserir_contas_receber():
     data_vencimento = data.get("data_vencimento")
     servicos_id = data.get("servico")
 
-    conexao = mysql.connector.connect(
-        host="containers-us-west-67.railway.app",
-        user="root",
-        password="NDCAVLFLa47wLwd4D8q3",
-        database="railway",
-        port="7664"
-    )
+    conexao = mysql.connector.connect(**stringConection)
     cursor = conexao.cursor()
     sql = "INSERT INTO contas_receber (cpf_cnpj, valor, data_emissao, data_vencimento, servicos_id) VALUES (%s, %s, %s, %s, %s)"
     valores = (cpf_cnpj, valor, data_emissao, data_vencimento, servicos_id)
@@ -363,13 +329,7 @@ def inserir_contas_receber():
 def consulta_receber():
     data = request.get_json(force=True)
     
-    conexao = mysql.connector.connect(
-        host="containers-us-west-67.railway.app",
-        user="root",
-        password="NDCAVLFLa47wLwd4D8q3",
-        database="railway",
-        port="7664"
-    )
+    conexao = mysql.connector.connect(**stringConection)
 
     cursor = conexao.cursor()
     
@@ -421,13 +381,7 @@ def atualiza_receber():
     sql = "UPDATE contas_receber set cpf_cnpj = %s, valor = %s, data_emissao = %s, data_vencimento = %s, servicos_id = %s, status = %s WHERE id = %s"
     valores = (cpf_cnpj, valor, data_emissao, data_vencimento, servico, status, id)
 
-    conexao = mysql.connector.connect(
-        host="containers-us-west-67.railway.app",
-        user="root",
-        password="NDCAVLFLa47wLwd4D8q3",
-        database="railway",
-        port="7664"
-    )
+    conexao = mysql.connector.connect(**stringConection)
 
     cursor = conexao.cursor()
     
@@ -447,13 +401,7 @@ def atualiza_receber():
 def delete_conta():
     data = request.get_json(force=True)
     id = data["id"]
-    conexao = mysql.connector.connect(
-        host="containers-us-west-67.railway.app",
-        user="root",
-        password="NDCAVLFLa47wLwd4D8q3",
-        database="railway",
-        port="7664"
-    )
+    conexao = mysql.connector.connect(**stringConection)
     cursor = conexao.cursor()
 
     sql = "DELETE FROM contas_receber WHERE id = %s"
@@ -473,4 +421,5 @@ def delete_conta():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=os.getenv("PORT", default=5000))
+    #app.run(debug=True, port=os.getenv("PORT", default=5000))
+    app.run(debug=True)
