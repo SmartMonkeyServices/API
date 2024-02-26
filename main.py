@@ -418,7 +418,51 @@ def delete_conta():
 
     finally:
         conexao.close()
+@app.route("/consulta-relatorio", methods=["POST"])
+def consulta_relatorio():
+    data = request.get_json(force=True)
+    conexao = mysql.connector.connect(**stringConection)
+    cursor = conexao.cursor()
+    try:
+        condicoes = []
 
+        # Percorre as chaves e valores do JSON
+        for chave, valor in data.items():
+            # Adiciona a condição à lista
+            if chave == 'periodo_vencimento_inicial':
+                condicoes.append(f"data_vencimento > '{valor}'")
+            elif chave == 'periodo_vencimento_final':
+                condicoes.append(f"data_vencimento < '{valor}'")
+            elif chave == 'servico' and valor == '99000001':
+                continue
+            elif chave == 'status' and valor == '99000001':
+                continue
+            else:   
+                condicoes.append(f"{chave} = '{valor}'")
+
+        where_clause = " AND ".join(condicoes)
+
+        sql = f"SELECT contas_receber.*, servicos.servico as servicos_id FROM contas_receber\
+            INNER JOIN servicos ON contas_receber.servicos_id = servicos.id\
+            WHERE {where_clause} ORDER BY id"
+
+        cursor.execute(sql)
+
+        resultados = cursor.fetchall()
+
+        if resultados:
+            colunas = [col[0] for col in cursor.description]
+            dados = [dict(zip(colunas, linha)) for linha in resultados]
+            return jsonify(dados)
+        else:
+            return "Nenhum conta a receber encontrada"
+
+    except Exception as e:
+        return f"Erro ao consultar dados: {str(e)}"
+
+    finally:
+        # Fecha a conexão com o banco de dados
+        conexao.close()
 
 if __name__ == '__main__':
     #app.run(debug=True, port=os.getenv("PORT", default=5000))
