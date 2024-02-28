@@ -4,11 +4,11 @@ from collections import OrderedDict
 import mysql.connector
 
 stringConection = {
-    "host": "localhost",
-    "user": "wesley",
-    "password": "waa123",
-    "database": "banco_smart_monkey",
-    "port": 3306
+    "host": "viaduct.proxy.rlwy.net",
+    "user": "root",
+    "password": "AC2bFBbH43hh16D4G-ggGEh3fadecbBC",
+    "database": "railway",
+    "port": 19224
 }
 
 app = Flask(__name__)
