@@ -1,3 +1,4 @@
+from itertools import count
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from collections import OrderedDict
@@ -433,16 +434,22 @@ def consulta_relatorio():
                 condicoes.append(f"data_vencimento > '{valor}'")
             elif chave == 'periodo_vencimento_final':
                 condicoes.append(f"data_vencimento < '{valor}'")
-            elif chave == 'servico' and valor == '99000001':
+            elif chave == 'servicos_id' and valor == '99000001':
                 continue
             elif chave == 'status' and valor == '99000001':
                 continue
+            elif chave == 'id':
+                condicoes.append(f"contas_receber.id = '{valor}'")
             else:   
                 condicoes.append(f"{chave} = '{valor}'")
 
-        where_clause = " AND ".join(condicoes)
-
-        sql = f"SELECT contas_receber.*, servicos.servico as servicos_id FROM contas_receber\
+        if len(condicoes) == 0:
+            sql = f"SELECT contas_receber.*, servicos.servico as servicos_id FROM contas_receber\
+            INNER JOIN servicos ON contas_receber.servicos_id = servicos.id\
+            ORDER by id"
+        else:
+            where_clause = " AND ".join(condicoes)
+            sql = f"SELECT contas_receber.*, servicos.servico as servicos_id FROM contas_receber\
             INNER JOIN servicos ON contas_receber.servicos_id = servicos.id\
             WHERE {where_clause} ORDER BY id"
 
